@@ -1,4 +1,4 @@
-module exercise/game2048
+module go2048
 
 go 1.16
 

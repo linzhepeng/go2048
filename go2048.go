@@ -15,6 +15,8 @@ var (
 	board [4][4]int
 	size  = len(board)
 	score = 0
+	best = 0
+	moves = 0
 )
 
 // 用于重置棋盘
@@ -42,11 +44,36 @@ func showBoard() {
 	cmd := exec.Command("cmd.exe", "/c", "cls")
 	cmd.Stdout = os.Stdout
 	_ = cmd.Run()
-	fmt.Printf("\n\n\n              ESC:quit | ENTER:restart\n")
-	fmt.Println("              play with arrow keys")
-	color.Set(color.FgHiCyan)
-	fmt.Printf("\n\n\n\n\n                                               SCORE:%d\n", score)
+
+	color.Set(color.FgYellow)
+	fmt.Printf("\n\n\n\n\n\n\n\n                                       join the numbers and get to the 2048!\n")
+	fmt.Printf("                                              ESC:quit | ENTER:restart\n")
+	fmt.Printf("                                              play with arrow keys\n")
+
+	fmt.Printf("                                              ")
+	color.Set(color.FgWhite)
+	color.Set(color.BgMagenta)
+	fmt.Printf("MOVES ")
+	color.Set(color.FgWhite)
+	color.Set(color.BgCyan)
+	fmt.Printf(" SCORE ")
+	color.Set(color.FgWhite)
+	color.Set(color.BgGreen)
+	fmt.Printf("   BEST \n")
 	color.Unset()
+
+	fmt.Printf("                                              ")
+	color.Set(color.FgWhite)
+	color.Set(color.BgMagenta)
+	fmt.Printf("%5d ",moves)
+	color.Set(color.FgHiWhite)
+	color.Set(color.BgCyan)
+	fmt.Printf(" %5d ",score)
+	color.Set(color.FgWhite)
+	color.Set(color.BgGreen)
+	fmt.Printf("  %5d \n",best)
+	color.Unset()
+
 	fmt.Printf("                                              ")
 	color.Set(color.BgWhite)
 	color.Set(color.FgWhite)
@@ -151,6 +178,7 @@ start:
 		case termbox.KeyCtrlC:
 			os.Exit(0)
 		case termbox.KeyEnter:
+			moves = 0
 			goto start
 		default:
 
@@ -175,6 +203,7 @@ continueOrNot:
 	case termbox.KeyEsc:
 		os.Exit(0)
 	case termbox.KeyEnter:
+		moves = 0
 		score = 0
 		goto start
 	default:
@@ -226,6 +255,7 @@ func moveDown() {
 	if !changed {
 		return
 	}
+	moves++
 	// 因为这里是执行向下合并的操作，按照2048的游戏规则应该在第一行随机空位生成一个随机数
 	zeroCol := make([]int, 0)
 	for j := 0; j < size; j++ {
@@ -279,6 +309,7 @@ func moveUp() {
 	if !changed {
 		return
 	}
+	moves++
 	zeroCol := make([]int, 0)
 	for j := 0; j < size; j++ {
 		if board[size-1][j] == 0 {
@@ -331,6 +362,7 @@ func moveRight() {
 	if !changed {
 		return
 	}
+	moves++
 	zeroRow := make([]int, 0)
 	for i := 0; i < size; i++ {
 		if board[i][0] == 0 {
@@ -383,6 +415,7 @@ func moveLeft() {
 	if !changed {
 		return
 	}
+	moves++
 	zeroRow := make([]int, 0)
 	for i := 0; i < size; i++ {
 		if board[i][size-1] == 0 {
@@ -400,7 +433,10 @@ func moveLeft() {
 func checkWin() bool {
 	for i := 0; i < size; i++ {
 		for j := 0; j < size; j++ {
-			score = score + board[i][j]*(1+board[i][j]/128)
+			score = score + board[i][j]*(1+board[i][j]/32)
+			if score>best {
+				best = score
+			}
 			if board[i][j] == 2048 {
 				return true
 			}
