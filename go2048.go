@@ -26,11 +26,11 @@ func newBoard() {
 
 //控制随机数的概率
 func randNumber() int {
-	n := rand.Intn(10)
+	n := rand.Intn(15)
 	switch n {
-	case 1, 2, 3, 4, 5,6:
+	case 1, 2, 3, 4, 5,6,7,8,9,10:
 		return 2
-	case  7, 8,9:
+	case 11,12,13,14 :
 		return 4
 	}
 	return 8
