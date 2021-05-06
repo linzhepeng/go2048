@@ -28,14 +28,13 @@ func newBoard() {
 func randNumber() int {
 	n := rand.Intn(10)
 	switch n {
-	case 1, 2, 3, 4, 5:
+	case 1, 2, 3, 4, 5,6:
 		return 2
-	case 6, 7, 8:
+	case  7, 8,9:
 		return 4
-	case 9:
-		return 8
 	}
-	return 16
+	return 8
+
 }
 
 //输出board并配色
@@ -214,40 +213,40 @@ continueOrNot:
 func moveDown() {
 	// changed标志位用来判断执行本次操作是否对棋盘数字造成改变，若没有改变，则不生成随机数字，即本次操作为无效操作
 	changed := false
-	for i := 0; i < size-1; i++ {
+	for i := size-1; i > 0; i-- {
 		for j := 0; j < size; j++ {
 			// 同一列上下两行都为0 则不执行任何操作
-			if board[i][j] == 0 && board[i+1][j] == 0 {
+			if board[i][j] == 0 && board[i-1][j] == 0 {
 				continue
 			}
 			// 上下两行数字相同，则向下合并，并将标志位置为true
-			if board[i][j] == board[i+1][j] {
-				board[i+1][j] = 2 * board[i][j]
-				board[i][j] = 0
+			if board[i][j] == board[i-1][j] {
+				board[i][j] = 2 * board[i][j]
+				board[i-1][j] = 0
 				changed = true
-				//这里解决特殊情况，比如遍历到第二行，执行上面的代码将本列第二行的数字和第三行合并，
-				//此时若不做以下判断，第一行的数字将不往下合并
+				//这里解决特殊情况，比如遍历到第二行，执行上面的代码将本列第二行和第一行的数字向下合并，
+				//此时若第三行为空，若不做以下判断，合并完成的第二行数字将不往下移动至第三行
 				k := i
-				for k > 0 {
-					if board[k-1][j] != 0 {
-						board[k][j] = board[k-1][j]
-						board[k-1][j] = 0
+				for k < size -1 {
+					if board[k+1][j] == 0 || board[k+1][j] == board[k][j] {
+						board[k+1][j] += board[k][j]
+						board[k][j] = 0
 					}
-					k--
+					k++
 				}
 			}
 			// 下一行为0，则本行数字往下移动
-			if board[i+1][j] == 0 {
-				board[i+1][j] = board[i][j]
-				board[i][j] = 0
+			if board[i][j] == 0 && board[i-1][j] != 0 {
+				board[i][j] = board[i-1][j]
+				board[i-1][j] = 0
 				changed = true
 				k := i
-				for k > 0 {
-					if board[k-1][j] != 0 {
-						board[k][j] = board[k-1][j]
-						board[k-1][j] = 0
+				for k < size -1 {
+					if board[k+1][j] == 0 || board[k+1][j] == board[k][j] {
+						board[k+1][j] += board[k][j]
+						board[k][j] = 0
 					}
-					k--
+					k++
 				}
 			}
 		}
@@ -273,35 +272,35 @@ func moveDown() {
 // 原理同moveDown
 func moveUp() {
 	changed := false
-	for i := size - 1; i > 0; i-- {
+	for i := 0; i <size -1; i++ {
 		for j := 0; j < size; j++ {
-			if board[i][j] == 0 && board[i-1][j] == 0 {
+			if board[i][j] == 0 && board[i+1][j] == 0 {
 				continue
 			}
-			if board[i][j] == board[i-1][j] {
-				board[i-1][j] = 2 * board[i][j]
-				board[i][j] = 0
+			if board[i][j] == board[i+1][j] {
+				board[i][j] = 2 * board[i][j]
+				board[i+1][j] = 0
 				changed = true
 				k := i
-				for k < size-1 {
-					if board[k+1][j] != 0 {
-						board[k][j] = board[k+1][j]
-						board[k+1][j] = 0
+				for k > 0 {
+					if board[k-1][j] == 0 ||board[k][j] == board[k-1][j] {
+						board[k-1][j] += board[k][j]
+						board[k][j] = 0
 					}
-					k++
+					k--
 				}
 			}
-			if board[i-1][j] == 0 {
-				board[i-1][j] = board[i][j]
-				board[i][j] = 0
+			if board[i][j] == 0 && board[i+1][j]!=0{
+				board[i][j] = board[i+1][j]
+				board[i+1][j] = 0
 				changed = true
 				k := i
-				for k < size-1 {
-					if board[k+1][j] != 0 {
-						board[k][j] = board[k+1][j]
-						board[k+1][j] = 0
+				for k >0 {
+					if board[k-1][j] == 0 ||board[k][j] == board[k-1][j] {
+						board[k-1][j] += board[k][j]
+						board[k][j] = 0
 					}
-					k++
+					k--
 				}
 			}
 		}
@@ -326,35 +325,35 @@ func moveUp() {
 //原理同moveDown
 func moveRight() {
 	changed := false
-	for j := 0; j < size-1; j++ {
+	for j := size -1; j > 0 ; j-- {
 		for i := 0; i < size; i++ {
-			if board[i][j] == 0 && board[i][j+1] == 0 {
+			if board[i][j] == 0 && board[i][j-1] == 0 {
 				continue
 			}
-			if board[i][j] == board[i][j+1] {
-				board[i][j+1] = 2 * board[i][j]
-				board[i][j] = 0
+			if board[i][j] == board[i][j-1] {
+				board[i][j] = 2 * board[i][j]
+				board[i][j-1] = 0
 				changed = true
 				k := j
-				for k > 0 {
-					if board[i][k-1] != 0 {
-						board[i][k] = board[i][k-1]
-						board[i][k-1] = 0
+				for k < size-1  {
+					if board[i][k+1] == 0 || board[i][k] == board[i][k+1] {
+						board[i][k+1] += board[i][k]
+						board[i][k] = 0
 					}
-					k--
+					k++
 				}
 			}
-			if board[i][j+1] == 0 {
-				board[i][j+1] = board[i][j]
-				board[i][j] = 0
+			if board[i][j] == 0 && board[i][j-1]!= 0{
+				board[i][j] = board[i][j-1]
+				board[i][j-1] = 0
 				changed = true
 				k := j
-				for k > 0 {
-					if board[i][k-1] != 0 {
-						board[i][k] = board[i][k-1]
-						board[i][k-1] = 0
+				for k < size-1  {
+					if board[i][k+1] == 0 || board[i][k] == board[i][k+1] {
+						board[i][k+1] += board[i][k]
+						board[i][k] = 0
 					}
-					k--
+					k++
 				}
 			}
 		}
@@ -379,35 +378,35 @@ func moveRight() {
 //原理同moveDown
 func moveLeft() {
 	changed := false
-	for j := size - 1; j > 0; j-- {
+	for j := 0; j < size -1 ; j++ {
 		for i := 0; i < size; i++ {
-			if board[i][j] == 0 && board[i][j-1] == 0 {
+			if board[i][j] == 0 && board[i][j+1] == 0 {
 				continue
 			}
-			if board[i][j] == board[i][j-1] {
-				board[i][j-1] = 2 * board[i][j]
-				board[i][j] = 0
+			if board[i][j] == board[i][j+1] {
+				board[i][j] = 2 * board[i][j]
+				board[i][j+1] = 0
 				changed = true
 				k := j
-				for k < size-1 {
-					if board[i][k+1] != 0 {
-						board[i][k] = board[i][k+1]
-						board[i][k+1] = 0
+				for k > 0  {
+					if board[i][k-1] == 0 || board[i][k] == board[i][k-1] {
+						board[i][k-1] += board[i][k]
+						board[i][k] = 0
 					}
-					k++
+					k--
 				}
 			}
-			if board[i][j-1] == 0 {
-				board[i][j-1] = board[i][j]
-				board[i][j] = 0
+			if board[i][j] == 0 && board[i][j+1]!= 0 {
+				board[i][j] = board[i][j+1]
+				board[i][j+1] = 0
 				changed = true
 				k := j
-				for k < size-1 {
-					if board[i][k+1] != 0 {
-						board[i][k] = board[i][k+1]
-						board[i][k+1] = 0
+				for k > 0  {
+					if board[i][k-1] == 0 || board[i][k] == board[i][k-1] {
+						board[i][k-1] += board[i][k]
+						board[i][k] = 0
 					}
-					k++
+					k--
 				}
 			}
 		}
