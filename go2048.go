@@ -67,10 +67,10 @@ func showBoard() {
 	fmt.Printf("%5d ",moves)
 	color.Set(color.FgHiWhite)
 	color.Set(color.BgCyan)
-	fmt.Printf(" %5d ",score)
+	fmt.Printf("%6d ",score)
 	color.Set(color.FgWhite)
 	color.Set(color.BgGreen)
-	fmt.Printf("  %5d \n",best)
+	fmt.Printf(" %6d \n",best)
 	color.Unset()
 
 	fmt.Printf("                                              ")

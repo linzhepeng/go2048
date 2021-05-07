@@ -11,4 +11,4 @@
 - 记录步数
 - 代码附注释，简单易懂
 
-![](./images/example.png)
+![lose](./images/example.png) ![win](./images/win.png)
